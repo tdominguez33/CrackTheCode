@@ -1,6 +1,6 @@
 import asyncio
 import pygame
-import random
+import numpy
 
 # Constants
 BACKGROUND  = (127, 127, 127)
@@ -8,7 +8,7 @@ WHITE       = (255, 255, 255)
 NUMBERS     = ["1", "2", "3", "4", "5", "6", "7", "8", "9"]
 X = 800
 Y = 768
-LEFT_MARGIN = 150
+LEFT_MARGIN = X * 0.1875
 
 pygame.init()
 
@@ -23,6 +23,7 @@ scoreTitle_font = pygame.font.Font('SunnySpellsBasicRegular.ttf', 30)
 
 # UI Elements
 title = title_font.render("Crack the Code", True, WHITE)
+restart_text = title_font.render("Press R to restart", True, WHITE)
 scoreExcelent = scoreTitle_font.render("Excelent", True, WHITE)
 scoreGood = scoreTitle_font.render("Good", True, WHITE)
 
@@ -58,7 +59,7 @@ def createMatrix(height):
 def generateRandomNumber():
     randomNumber = []
     while len(randomNumber) < 4:
-        newNumber = str(random.randint(1,9))
+        newNumber = str(numpy.random.randint(1,9))
         if newNumber not in randomNumber:
             randomNumber.append(newNumber)
     return randomNumber
@@ -94,6 +95,9 @@ async def main():
         screen.fill(BACKGROUND)
 
         if restart == True:
+            endGame = False
+            showText = True
+            showScoreTitle = False
             numberToGuess = generateRandomNumber()
             winText = title_font.render(getWinString(numberToGuess), True, WHITE)
             loseText = title_font.render(getLoseString(numberToGuess), True, WHITE)
@@ -102,6 +106,7 @@ async def main():
             permanentNumbers = []
             scores = []
             matrixHeight = 1
+            
             restart = False
 
         if endGame == True:
@@ -112,10 +117,12 @@ async def main():
             matrixHeight = 0
             if win:
                 string = getWinString(numberToGuess)
-                screen.blit(winText, (X/2 - (getStringWidth(string, title_font) / 2), Y/2 - (getStringHeight(string, title_font) / 2)))
+                screen.blit(winText, (X/2 - (getStringWidth(string, title_font) / 2), Y/2 - 2* (getStringHeight(string, title_font))))
+                screen.blit(restart_text, (X/2 - (getStringWidth(string, title_font) / 2), Y/2 + (getStringHeight(string, title_font))))
             elif lose:
                 string = getLoseString(numberToGuess)
-                screen.blit(loseText, (X/2 - (getStringWidth(string, title_font) / 2), Y/2 - (getStringHeight(string, title_font) / 2)))
+                screen.blit(loseText, (X/2 - (getStringWidth(string, title_font) / 2), Y/2 - 2 * (getStringHeight(string, title_font))))
+                screen.blit(restart_text, (X/2 - (getStringWidth(string, title_font) / 2), Y/2 + (getStringHeight(string, title_font))))
 
         if showText == True:
                 screen.blit(title, (10, 10))
@@ -135,6 +142,8 @@ async def main():
                             actualNumbers.append(event.unicode)
                     elif event.key == pygame.K_BACKSPACE:
                         actualNumbers = actualNumbers[:-1]
+                    elif event.key == pygame.K_r:
+                        restart = True
                     elif (event.key == pygame.K_RETURN or event.key == pygame.K_KP_ENTER) and len(actualNumbers) == 4:
                         permanentNumbers.append(actualNumbers)
                         score = compareNumbers(numberToGuess, actualNumbers)
