@@ -3,12 +3,20 @@ import pygame
 import numpy
 
 # Constants
-BACKGROUND  = (127, 127, 127)
-WHITE       = (255, 255, 255)
 NUMBERS     = ["1", "2", "3", "4", "5", "6", "7", "8", "9"]
 X = 800
 Y = 768
 LEFT_MARGIN = X * 0.1875
+
+# Colors
+PINK            = (215, 65, 167)
+BACKGROUND      = (58, 23, 114)
+WHITE           = (205, 205, 205)
+GREEN           = (33, 78, 52)
+
+# Fonts
+QAZ = "fonts/Qaz.ttf"
+SUNNYSPELLS = "fonts/SunnySpellsBasicRegular.ttf"
 
 pygame.init()
 
@@ -17,14 +25,14 @@ screen = pygame.display.set_mode((X, Y))
 pygame.display.set_caption("Crack the Code")
 
 # Fonts
-title_font = pygame.font.Font('SunnySpellsBasicRegular.ttf', 48)
-number_font = pygame.font.Font('SunnySpellsBasicRegular.ttf', 48)
-scoreTitle_font = pygame.font.Font('SunnySpellsBasicRegular.ttf', 30)
+title_font = pygame.font.Font(QAZ, 48)
+number_font = pygame.font.Font(SUNNYSPELLS, 48)
+scoreTitle_font = pygame.font.Font(QAZ, 25)
 
 # UI Elements
-title = title_font.render("Crack the Code", True, WHITE)
+title = title_font.render("Crack the Code", True, PINK)
 restart_text = title_font.render("Press R to restart", True, WHITE)
-scoreExcelent = scoreTitle_font.render("Excelent", True, WHITE)
+scoreExcelent = scoreTitle_font.render("Excellent", True, WHITE)
 scoreGood = scoreTitle_font.render("Good", True, WHITE)
 
 # Text Positioning
@@ -46,7 +54,7 @@ def getStringHeight(text, font):
 def createRow(y):
     x = LEFT_MARGIN - 15
     for i in range(0,4):
-        pygame.draw.rect(screen, WHITE, pygame.Rect(x, y, 55, 55),  2, 3)
+        pygame.draw.rect(screen, PINK, pygame.Rect(x, y, 55, 55),  2, 3)
         x += 60
 
 def createMatrix(height):
@@ -106,7 +114,6 @@ async def main():
             permanentNumbers = []
             scores = []
             matrixHeight = 1
-            
             restart = False
 
         if endGame == True:
@@ -127,8 +134,8 @@ async def main():
         if showText == True:
                 screen.blit(title, (10, 10))
                 if showScoreTitle == True:
-                    screen.blit(scoreGood, (460, 40))
-                    screen.blit(scoreExcelent, (545, 40))
+                    screen.blit(scoreGood, (450, 40))
+                    screen.blit(scoreExcelent, (535, 40))
                     
         for event in pygame.event.get():
             
@@ -136,7 +143,8 @@ async def main():
                 run = False
 
             if event.type == pygame.KEYDOWN:
-                if matrixHeight <= 10:
+                # The game is ongoing
+                if endGame == False:
                     if event.unicode in NUMBERS and len(actualNumbers) < 4:
                         if event.unicode not in actualNumbers:
                             actualNumbers.append(event.unicode)
@@ -154,10 +162,12 @@ async def main():
                         if score[1] == '4':
                             endGame = True
                             win = True
-                        if matrixHeight == 10:
+                        elif matrixHeight == 10:
                             endGame = True
                             lose = True
-                        
+                # The game is over
+                if event.key == pygame.K_r:
+                    restart = True
 
         createMatrix(matrixHeight)
 
