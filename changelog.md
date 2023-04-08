@@ -1,5 +1,13 @@
 # Crack the Code Changelog
 
+## V0.2.0 - 07/04/2023
+- ##### Added an on-screen keyboard (this doesn't replace the keyboard input, they coexist).
+- ##### Noticed the game only gave you 9 tries instead of 10, so fixed that.
+- ##### Minor extra improvements.
+
+### To-Do
+ - ##### Correct various thing having to do with the coordinates of some elements and pieces of code that are repeated for the physical keyboard and on-screen keyboard.
+
 ## V0.1.2 - 06/04/2023
 - ##### Minimum restyle, new colors, font and icon.
 - ##### Fixed a small visual bug where numbers appeared in the win or lose screen if a key was pressed.
