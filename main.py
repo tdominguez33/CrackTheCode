@@ -27,16 +27,17 @@ pygame.display.set_caption("Crack the Code")
 
 # Fonts
 title_font      = pygame.font.Font(QAZ, 48)
+subtitle_font   = pygame.font.Font(QAZ, 35)
 number_font     = pygame.font.Font(SUNNYSPELLS, 48)
 scoreTitle_font = pygame.font.Font(QAZ, 25)
-submit_font     = pygame.font.Font(QAZ, 35)
+
 
 # UI Elements
 title = title_font.render("Crack the Code", True, PINK)
-restart_text = title_font.render("Press R to restart", True, WHITE)
+submit = subtitle_font.render("Submit", True, WHITE)
+restart_text = subtitle_font.render("To restart press R or click the screen", True, WHITE)
 scoreExcelent = scoreTitle_font.render("Excellent", True, WHITE)
 scoreGood = scoreTitle_font.render("Good", True, WHITE)
-submit = submit_font.render("Submit", True, WHITE)
 
 # Images
 backArrow = pygame.image.load("assets/img/backArrow.png").convert_alpha() #convert.alpha is to keep transparency
@@ -91,8 +92,8 @@ def drawKeyboard():
 	x = (X / 2) - (width / 2)
 	y = 880
 	pygame.draw.rect(screen, PINK, pygame.Rect(x, 880, width, height),  2, 3)
-	x_string = (x + (width / 2)) - (getStringWidth("submit", submit_font) / 2) - 3
-	y_string = (y + (height / 2)) - (getStringHeight("submit", submit_font) / 2)
+	x_string = (x + (width / 2)) - (getStringWidth("submit", subtitle_font) / 2) - 3
+	y_string = (y + (height / 2)) - (getStringHeight("submit", subtitle_font) / 2)
 	screen.blit(submit, (x_string, y_string))
 	
 
@@ -132,7 +133,6 @@ async def main():
 
 	while run:
 		screen.fill(BACKGROUND)
-		drawKeyboard()
 
 		if restart == True:
 			endGame = False
@@ -165,6 +165,7 @@ async def main():
 
 		if showText == True:
 				screen.blit(title, (10, 10))
+				drawKeyboard()
 				if showScoreTitle == True:
 					screen.blit(scoreGood, (450, 40))
 					screen.blit(scoreExcelent, (535, 40))
@@ -197,39 +198,42 @@ async def main():
 							endGame = True
 							lose = True
 				# The game is over
-				if event.key == pygame.K_r:
+				elif event.key == pygame.K_r:
 					restart = True
 			
 			if event.type == pygame.MOUSEBUTTONDOWN:
-				mouse = pygame.mouse.get_pos()
-				print(mouse[0], mouse[1])
-				# We check if we are on the rectangle that the set of button creates
-				if (100 < mouse[0] < 700) and (800 < mouse[1] < 855):
-					x_keyboard = 100
-					for i in range(1, 10):
-						if (x_keyboard < mouse[0] < x_keyboard + 55):
-							# When we find the number we check if it meets the criteria to be on the list
-							if (str(i) not in actualNumbers)and (len(actualNumbers) < 4):
-								actualNumbers.append(str(i))
-							break
-						x_keyboard += 60
-						i += 1
-					# This means we were on the range but none of 9 numbers matched, which means we clicked on the erase button
-					if x_keyboard == 640:
-						actualNumbers = actualNumbers[:-1]
-				elif (310 < mouse[0] < 490) and (880 < mouse[1] < 930) and len(actualNumbers) == 4:
-					permanentNumbers.append(actualNumbers)
-					score = compareNumbers(numberToGuess, actualNumbers)
-					scores.append(score)
-					matrixHeight += 1
-					showScoreTitle = True
-					actualNumbers = []
-					if score[1] == '4':
-						endGame = True
-						win = True
-					elif matrixHeight == NUMBEROFTRIES + 1:
-						endGame = True
-						lose = True
+				if endGame == False:
+					mouse = pygame.mouse.get_pos()
+					print(mouse[0], mouse[1])
+					# We check if we are on the rectangle that the set of button creates
+					if (100 < mouse[0] < 700) and (800 < mouse[1] < 855):
+						x_keyboard = 100
+						for i in range(1, 10):
+							if (x_keyboard < mouse[0] < x_keyboard + 55):
+								# When we find the number we check if it meets the criteria to be on the list
+								if (str(i) not in actualNumbers)and (len(actualNumbers) < 4):
+									actualNumbers.append(str(i))
+								break
+							x_keyboard += 60
+							i += 1
+						# This means we were on the range but none of 9 numbers matched, which means we clicked on the erase button
+						if mouse[0] > 640:
+							actualNumbers = actualNumbers[:-1]
+					elif (310 < mouse[0] < 490) and (880 < mouse[1] < 930) and len(actualNumbers) == 4:
+						permanentNumbers.append(actualNumbers)
+						score = compareNumbers(numberToGuess, actualNumbers)
+						scores.append(score)
+						matrixHeight += 1
+						showScoreTitle = True
+						actualNumbers = []
+						if score[1] == '4':
+							endGame = True
+							win = True
+						elif matrixHeight == NUMBEROFTRIES + 1:
+							endGame = True
+							lose = True
+				else:
+					restart = True
 
 		createMatrix(matrixHeight)
 

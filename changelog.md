@@ -1,5 +1,9 @@
 # Crack the Code Changelog
 
+## V0.2.1 - 07/04/2023
+- ##### Implemented restart withouth the need of a keyboard (Anxious me deployed the last update without implementing that).
+- ##### Fixed a bug that deleted a number if you pressed on the space in between the number buttons.
+
 ## V0.2.0 - 07/04/2023
 - ##### Added an on-screen keyboard (this doesn't replace the keyboard input, they coexist).
 - ##### Noticed the game only gave you 9 tries instead of 10, so fixed that.
