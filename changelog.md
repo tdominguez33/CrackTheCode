@@ -1,5 +1,10 @@
 # Crack the Code Changelog
 
+## V0.2.2 - 09/04/2023
+- ##### Made the on-screen keyboard keys bigger for it to be better suited for mobile use.
+- ##### Aesthetic changes.
+- ##### Made more coordinates relative to a determined constant instead of being hardcoded.
+
 ## V0.2.1 - 07/04/2023
 - ##### Implemented restart withouth the need of a keyboard (Anxious me deployed the last update without implementing that).
 - ##### Fixed a bug that deleted a number if you pressed on the space in between the number buttons.

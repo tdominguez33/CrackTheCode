@@ -7,17 +7,20 @@ NUMBERS     = ["1", "2", "3", "4", "5", "6", "7", "8", "9"]
 NUMBEROFTRIES = 10
 X = 800
 Y = 950
-LEFT_MARGIN = X * 0.1875
+LEFT_MARGIN = 175 # Used to move the numbers, squares and scores horizontally
+KEYBOARD_SQUARESIZE = 70
+KEYBOARD_Y = 800
+KEYBOARD_X = (X / 2) - (((KEYBOARD_SQUARESIZE + 5) * 10) / 2)
 
 # Colors
 PINK            = (215, 65, 167)
-BACKGROUND      = (58, 23, 114)
+PURPLE      	= (58, 23, 114)
 WHITE           = (205, 205, 205)
-GREEN           = (33, 78, 52)
+BLACK 			= (0, 0, 0)
 
 # Fonts
-QAZ = "assets/fonts/Qaz.ttf"
-SUNNYSPELLS = "assets/fonts/SunnySpellsBasicRegular.ttf"
+QAZ 			= "assets/fonts/Qaz.ttf"
+SUNNYSPELLS 	= "assets/fonts/SunnySpellsBasicRegular.ttf"
 
 pygame.init()
 
@@ -28,19 +31,19 @@ pygame.display.set_caption("Crack the Code")
 # Fonts
 title_font      = pygame.font.Font(QAZ, 48)
 subtitle_font   = pygame.font.Font(QAZ, 35)
-number_font     = pygame.font.Font(SUNNYSPELLS, 48)
 scoreTitle_font = pygame.font.Font(QAZ, 25)
-
+number_font     = pygame.font.Font(SUNNYSPELLS, 48)
+keyboard_font   = pygame.font.Font(SUNNYSPELLS, 80)
 
 # UI Elements
-title = title_font.render("Crack the Code", True, PINK)
-submit = subtitle_font.render("Submit", True, WHITE)
-restart_text = subtitle_font.render("To restart press R or click the screen", True, WHITE)
-scoreExcelent = scoreTitle_font.render("Excellent", True, WHITE)
-scoreGood = scoreTitle_font.render("Good", True, WHITE)
+title 			= title_font.render("Crack the Code", True, PINK)
+submit 			= subtitle_font.render("Submit", True, BLACK)
+restart_text 	= subtitle_font.render("To restart press R or click the screen", True, WHITE)
+scoreExcelent 	= scoreTitle_font.render("Excellent", True, WHITE)
+scoreGood 		= scoreTitle_font.render("Good", True, WHITE)
 
 # Images
-backArrow = pygame.image.load("assets/img/backArrow.png").convert_alpha() #convert.alpha is to keep transparency
+backspace = pygame.image.load("assets/img/backspace.png").convert_alpha() #convert.alpha is to keep transparency
 
 # Text Positioning
 def getWinString(number):
@@ -72,26 +75,26 @@ def createMatrix(height):
 
 def drawKeyboard():
 	# Squares
-	x = (X / 2) - 300
+	x = KEYBOARD_X
 	for i in range(0,10):
-		pygame.draw.rect(screen, PINK, pygame.Rect(x, 800, X * 0.06875, X * 0.06875),  2, 3)
-		x += 60
+		pygame.draw.rect(screen, PINK, pygame.Rect(x, KEYBOARD_Y, KEYBOARD_SQUARESIZE, KEYBOARD_SQUARESIZE),  0, 3)
+		x += KEYBOARD_SQUARESIZE + 5
 	
 	# Numbers / Backspace
-	x = (X / 2) - 300 + 18
-	y = 810
+	x = KEYBOARD_X + 20
+	y = KEYBOARD_Y + 5
 	for i in range(1, 10):
-		numberText = number_font.render(str(i), True, WHITE)
+		numberText = keyboard_font.render(str(i), True, PURPLE)
 		screen.blit(numberText, (x, y))
-		x += 60
-	screen.blit(backArrow, (640, 800))
+		x += KEYBOARD_SQUARESIZE + 5
+	screen.blit(backspace, (KEYBOARD_SQUARESIZE * 10, KEYBOARD_Y))
 
 	# Submit Button
 	width = 180
 	height = 50
-	x = (X / 2) - (width / 2)
-	y = 880
-	pygame.draw.rect(screen, PINK, pygame.Rect(x, 880, width, height),  2, 3)
+	x = (X / 2) - (width / 2) - 3
+	y = KEYBOARD_Y + KEYBOARD_SQUARESIZE + 10
+	pygame.draw.rect(screen, PINK, pygame.Rect(x, y, width, height),  0, 3)
 	x_string = (x + (width / 2)) - (getStringWidth("submit", subtitle_font) / 2) - 3
 	y_string = (y + (height / 2)) - (getStringHeight("submit", subtitle_font) / 2)
 	screen.blit(submit, (x_string, y_string))
@@ -132,7 +135,7 @@ async def main():
 	showScoreTitle = False
 
 	while run:
-		screen.fill(BACKGROUND)
+		screen.fill(PURPLE)
 
 		if restart == True:
 			endGame = False
@@ -167,8 +170,8 @@ async def main():
 				screen.blit(title, (10, 10))
 				drawKeyboard()
 				if showScoreTitle == True:
-					screen.blit(scoreGood, (450, 40))
-					screen.blit(scoreExcelent, (535, 40))
+					screen.blit(scoreGood, (LEFT_MARGIN + 300, 40))
+					screen.blit(scoreExcelent, (LEFT_MARGIN + 385, 40))
 					
 		for event in pygame.event.get():
 			
@@ -206,19 +209,20 @@ async def main():
 					mouse = pygame.mouse.get_pos()
 					print(mouse[0], mouse[1])
 					# We check if we are on the rectangle that the set of button creates
-					if (100 < mouse[0] < 700) and (800 < mouse[1] < 855):
-						x_keyboard = 100
+					if (25 < mouse[0] < 770) and (KEYBOARD_Y < mouse[1] < KEYBOARD_Y + KEYBOARD_SQUARESIZE):
+						x_keyboard = 25
 						for i in range(1, 10):
-							if (x_keyboard < mouse[0] < x_keyboard + 55):
+							if (x_keyboard < mouse[0] < x_keyboard + 70):
 								# When we find the number we check if it meets the criteria to be on the list
 								if (str(i) not in actualNumbers)and (len(actualNumbers) < 4):
 									actualNumbers.append(str(i))
 								break
-							x_keyboard += 60
+							x_keyboard += 75
 							i += 1
 						# This means we were on the range but none of 9 numbers matched, which means we clicked on the erase button
-						if mouse[0] > 640:
+						if mouse[0] > 700:
 							actualNumbers = actualNumbers[:-1]
+					# If we are not on the numbers maybe we are on the submit button
 					elif (310 < mouse[0] < 490) and (880 < mouse[1] < 930) and len(actualNumbers) == 4:
 						permanentNumbers.append(actualNumbers)
 						score = compareNumbers(numberToGuess, actualNumbers)
