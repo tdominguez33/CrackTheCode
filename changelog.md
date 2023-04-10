@@ -1,5 +1,10 @@
 # Crack the Code Changelog
 
+## V0.3.0 - 10/04/2023
+- ##### New mechanic! You can now select which square to write the next number into, just click the number and the selected square will change color to indicate its been selected (this also works to delete and replace numbers).
+- ##### Now if a number is introduced its key on the on-screen keyboard changes color.
+- ##### More minor improvements to the code.
+
 ## V0.2.2 - 09/04/2023
 - ##### Made the on-screen keyboard keys bigger for it to be better suited for mobile use.
 - ##### Aesthetic changes.
