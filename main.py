@@ -16,12 +16,8 @@ SUBMIT_BUTTON_HEIGHT = 50
 pygame.init()
 
 # Initial values
-if (pygame.display.Info().current_w > MINIMUM_WIDTH) and (pygame.display.Info().current_h > MINIMUM_HEIGHT):
-	window_X = pygame.display.Info().current_w		# Display's Current Width
-	window_Y = pygame.display.Info().current_h		# Display's Current Height
-else:
-	window_X = MINIMUM_WIDTH
-	window_Y = MINIMUM_HEIGHT
+window_X = 800
+window_Y = 950
 
 print(window_X)
 print(window_Y)
@@ -349,8 +345,8 @@ async def main(screen, window_X, window_Y):
 			
 			if (event.type == pygame.VIDEORESIZE):
 				if (event.w >= MINIMUM_WIDTH) and (event.h >= MINIMUM_HEIGHT):
-					window_X = pygame.display.Info().current_w		# Display's Current Width
-					window_Y = pygame.display.Info().current_h		# Display's Current Height
+					window_X = event.w
+					window_Y = event.h
 					left_margin = window_X / 2 - 510/2				# 510 pixels is the aproximate width of the matrix and the scores combined
 				
 				screen = pygame.display.set_mode((window_X, window_Y), pygame.RESIZABLE)

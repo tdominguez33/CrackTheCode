@@ -1,5 +1,8 @@
 # Crack the Code Changelog
 
+## V0.4.2 - 13/04/2023
+- ##### Reverted the fullscreen default, how mobile looks depends on pygbag so makes no sense to limit PC.
+
 ## V0.4.1 - 13/04/2023
 - ##### The game is now fullscreen by default so it can adapt better on mobile (I hope) and the key to exit on PC is ESC.
 - ##### Fixed a bug where the backspace image didn't move properly when resizing the window.
