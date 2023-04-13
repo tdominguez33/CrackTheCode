@@ -2,21 +2,30 @@ import asyncio
 import pygame
 import numpy
 
-# Initial values
-window_X = 800		# Width
-window_Y = 950		# Height
-left_margin = 200	# Used to move the numbers, squares and scores horizontally
-
 # Constants
 MINIMUM_WIDTH = 800
-MINIMUN_HEIGHT = 950
-NUMBERS     = ["1", "2", "3", "4", "5", "6", "7", "8", "9"]
+MINIMUM_HEIGHT = 950
+NUMBERS = ["1", "2", "3", "4", "5", "6", "7", "8", "9"]
 NUMBEROFTRIES = 10
 CODELENGTH = 4
 MATRIXSQUARESIZE = 55	# The size of the numbers should be defined according to this value
 KEYBOARD_SQUARESIZE = 70
 SUBMIT_BUTTON_WIDTH = 250
 SUBMIT_BUTTON_HEIGHT = 50
+
+pygame.init()
+
+# Initial values
+if (pygame.display.Info().current_w > MINIMUM_WIDTH) and (pygame.display.Info().current_h > MINIMUM_HEIGHT):
+	window_X = pygame.display.Info().current_w		# Display's Current Width
+	window_Y = pygame.display.Info().current_h		# Display's Current Height
+else:
+	window_X = MINIMUM_WIDTH
+	window_Y = MINIMUM_HEIGHT
+
+print(window_X)
+print(window_Y)
+left_margin = 200 	# Used to move the numbers, squares and scores horizontally
 
 # Colors
 PINK			= (215, 65, 167)
@@ -29,8 +38,6 @@ GREY2			= (205, 205, 205)
 # Fonts
 QAZ 			= "assets/fonts/Qaz.ttf"
 SUNNYSPELLS 	= "assets/fonts/SunnySpellsBasicRegular.ttf"
-
-pygame.init()
 
 screen = pygame.display.set_mode((window_X, window_Y), pygame.RESIZABLE)
 
@@ -116,7 +123,7 @@ def drawKeyboard(actualNumbers, keyboard_X, keyboard_Y):
 		x += KEYBOARD_SQUARESIZE + 5
 	
 	# Backspace Image
-	screen.blit(backspace, (KEYBOARD_SQUARESIZE * 10, keyboard_Y))
+	screen.blit(backspace, (keyboard_X + (KEYBOARD_SQUARESIZE + 5) * 9, keyboard_Y))
 
 	# Submit Button
 	x = keyboard_X + (KEYBOARD_SQUARESIZE + 5) * (5 - (SUBMIT_BUTTON_WIDTH / 75) / 2) - 5
@@ -290,15 +297,16 @@ async def main(screen, window_X, window_Y):
 						restart = True
 					elif (event.key == pygame.K_RETURN or event.key == pygame.K_KP_ENTER) and isListComplete(actualNumbers):
 						permanentNumbers, scores, actualNumbers, matrixHeight, selectedSquare, showScoreTitle, endGame, win, lose = submitNumber(permanentNumbers, actualNumbers, matrixHeight, numberToGuess, scores)
+					elif event.key == pygame.K_ESCAPE:
+						run = False
 				# The game is over
 				elif event.key == pygame.K_r:
 					restart = True
+				
 			
 			if event.type == pygame.MOUSEBUTTONDOWN:
 				if endGame == False:
 					mouse = pygame.mouse.get_pos()
-					print(mouse[0], mouse[1])
-					print((keyboard_X + (KEYBOARD_SQUARESIZE + 5) * 10 - 5))
 					#### On-screen Keyboard Actions ####
 					# We check if we are on the rectangle that the set of button creates
 					if (keyboard_X < mouse[0] < (keyboard_X + (KEYBOARD_SQUARESIZE + 5) * 10 - 5)) and (keyboard_Y < mouse[1] < keyboard_Y + KEYBOARD_SQUARESIZE):
@@ -340,10 +348,10 @@ async def main(screen, window_X, window_Y):
 					restart = True
 			
 			if (event.type == pygame.VIDEORESIZE):
-				if (event.w >= MINIMUM_WIDTH) and (event.h >= MINIMUN_HEIGHT):
-					window_X = event.w
-					window_Y = event.h
-					left_margin = window_X * 0.25
+				if (event.w >= MINIMUM_WIDTH) and (event.h >= MINIMUM_HEIGHT):
+					window_X = pygame.display.Info().current_w		# Display's Current Width
+					window_Y = pygame.display.Info().current_h		# Display's Current Height
+					left_margin = window_X / 2 - 510/2				# 510 pixels is the aproximate width of the matrix and the scores combined
 				
 				screen = pygame.display.set_mode((window_X, window_Y), pygame.RESIZABLE)
 

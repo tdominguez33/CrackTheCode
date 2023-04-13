@@ -1,5 +1,9 @@
 # Crack the Code Changelog
 
+## V0.4.1 - 13/04/2023
+- ##### The game is now fullscreen by default so it can adapt better on mobile (I hope) and the key to exit on PC is ESC.
+- ##### Fixed a bug where the backspace image didn't move properly when resizing the window.
+
 ## V0.4.0 - 13/04/2023
 - ##### The window is now resizable, all elements should adjust according to the size of the window (especially useful for mobile).
 - ##### Improvements to the code to be able to add more features on the future.
