@@ -1,5 +1,9 @@
 # Crack the Code Changelog
 
+## V0.4.0 - 13/04/2023
+- ##### The window is now resizable, all elements should adjust according to the size of the window (especially useful for mobile).
+- ##### Improvements to the code to be able to add more features on the future.
+
 ## V0.3.0 - 10/04/2023
 - ##### New mechanic! You can now select which square to write the next number into, just click the number and the selected square will change color to indicate its been selected (this also works to delete and replace numbers).
 - ##### Now if a number is introduced its key on the on-screen keyboard changes color.
@@ -11,7 +15,7 @@
 - ##### Made more coordinates relative to a determined constant instead of being hardcoded.
 
 ## V0.2.1 - 07/04/2023
-- ##### Implemented restart withouth the need of a keyboard (Anxious me deployed the last update without implementing that).
+- ##### Implemented restart without the need of a keyboard (Anxious me deployed the last update without implementing that).
 - ##### Fixed a bug that deleted a number if you pressed on the space in between the number buttons.
 
 ## V0.2.0 - 07/04/2023
