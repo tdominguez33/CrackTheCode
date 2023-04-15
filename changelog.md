@@ -1,5 +1,9 @@
 # Crack the Code Changelog
 
+## V0.5.0 - 14/04/2023
+- ##### You can now choose length of the code you want to crack! Choose between Easy (3 digits), Normal (4 Digits) or Hard (5 Digits).
+- ##### Added a few comments to the code to improve it's legibility.
+
 ## V0.4.2 - 13/04/2023
 - ##### Reverted the fullscreen default, how mobile looks depends on pygbag so makes no sense to limit PC.
 
