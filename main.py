@@ -1,13 +1,10 @@
 import asyncio
 import pygame
-import numpy
+from auxiliaryFunctions import *
 
 # Constants
 NUMBERS = ["1", "2", "3", "4", "5", "6", "7", "8", "9"]
-MINIMUM_WIDTH = 800
-MINIMUM_HEIGHT = 950
-NUMBEROFTRIES = 10
-MATRIXSQUARESIZE = 55	# The size of the numbers should be defined according to this value
+MATRIXSQUARESIZE = 55
 KEYBOARD_SQUARESIZE = 70
 SUBMIT_BUTTON_WIDTH = 250
 SUBMIT_BUTTON_HEIGHT = 50
@@ -15,19 +12,11 @@ DIFFICULTY_BUTTON_WIDTH = 200
 DIFFICULTY_BUTTON_HEIGHT = 150
 DIFFICULTY_BUTTON_SEPARATION = 30
 
-# Initial resolution values
-window_X = 800
-window_Y = 950
-
-pygame.init()
-pygame.display.set_caption("Crack the Code")
-screen = pygame.display.set_mode((window_X, window_Y), pygame.RESIZABLE)
-
 # Colors
+BLACK			= (0, 0, 0)
+WHITE			= (205, 205, 205)
 PINK			= (215, 65, 167)
 PURPLE			= (58, 23, 114)
-WHITE			= (205, 205, 205)
-BLACK			= (0, 0, 0)
 GREY 			= (172, 165, 185)
 GREY2			= (205, 205, 205)
 
@@ -35,45 +24,46 @@ GREY2			= (205, 205, 205)
 QAZ 			= "assets/fonts/Qaz.ttf"
 SUNNYSPELLS 	= "assets/fonts/SunnySpellsBasicRegular.ttf"
 
+# Initial resolution values
+window_X 		= 800
+window_Y 		= 950
+
+# PyGame initialization
+pygame.init()
+pygame.display.set_caption("Crack the Code")
+screen = pygame.display.set_mode((window_X, window_Y), pygame.RESIZABLE)
+
 # Fonts
 title_font      = pygame.font.Font(QAZ, 48)
 subtitle_font   = pygame.font.Font(QAZ, 35)
 scoreTitle_font = pygame.font.Font(QAZ, 25)
-number_font     = pygame.font.Font(SUNNYSPELLS, 48)
 keyboard_font   = pygame.font.Font(SUNNYSPELLS, 80)
+number_font     = pygame.font.Font(SUNNYSPELLS, 48)
 
-# UI Text
-title			= title_font.render("Crack the Code", True, PINK)
-submitWhite		= subtitle_font.render("Submit", True, GREY2)
-submitPurple	= subtitle_font.render("Submit", True, PURPLE)
-restart_text 	= subtitle_font.render("To restart press R or click the screen", True, WHITE)
-scoreExcelent 	= scoreTitle_font.render("Excellent", True, WHITE)
-scoreGood		= scoreTitle_font.render("Good", True, WHITE)
-difficultyText 	= title_font.render("Select Difficulty:", True, WHITE)
-easy			= subtitle_font.render("Easy", True, PURPLE)
-easy_digits		= subtitle_font.render("(3 Digits)", True, PURPLE)
-normal			= subtitle_font.render("Normal", True, PURPLE)
-normal_digits	= subtitle_font.render("(4 Digits)", True, PURPLE)
-hard			= subtitle_font.render("Hard", True, PURPLE)
-hard_digits		= subtitle_font.render("(5 Digits)", True, PURPLE)
+# Constant UI Text
+title				= title_font.render("Crack the Code", True, PINK)
+difficultyText 		= title_font.render("Select Difficulty:", True, WHITE)
+submitWhite			= subtitle_font.render("Submit", True, GREY2)
+submitPurple		= subtitle_font.render("Submit", True, PURPLE)
+restart_text 		= subtitle_font.render("To restart press R or click the screen", True, WHITE)
+easy				= subtitle_font.render("Easy", True, PURPLE)
+easy_digits			= subtitle_font.render("(3 Digits)", True, PURPLE)
+normal				= subtitle_font.render("Normal", True, PURPLE)
+normal_digits		= subtitle_font.render("(4 Digits)", True, PURPLE)
+hard				= subtitle_font.render("Hard", True, PURPLE)
+hard_digits			= subtitle_font.render("(5 Digits)", True, PURPLE)
+easy_hover			= subtitle_font.render("Easy", True, PINK)
+easy_digits_hover 	= subtitle_font.render("(3 Digits)", True, PINK)
+normal_hover		= subtitle_font.render("Normal", True, PINK)
+normal_digits_hover	= subtitle_font.render("(4 Digits)", True, PINK)
+hard_hover			= subtitle_font.render("Hard", True, PINK)
+hard_digits_hover 	= subtitle_font.render("(5 Digits)", True, PINK)
+scoreExcelent 		= scoreTitle_font.render("Excellent", True, WHITE)
+scoreGood			= scoreTitle_font.render("Good", True, WHITE)
 
 # Images
-backspace = pygame.image.load("assets/img/backspace.png").convert_alpha() #convert.alpha is to keep transparency
-
-#### Text Positioning ####
-def getWinString(number):
-	return "You Won! The number was " + listToNumber(number)
-
-def getLoseString(number):
-	return "You Lost :( The number was " + listToNumber(number)
-
-def getStringWidth(text, font):
-	text_width, text_height = font.size(text)
-	return text_width
-
-def getStringHeight(text, font):
-	text_width, text_height = font.size(text)
-	return text_height
+backspacePurple = pygame.image.load("assets/img/backspace_purple.png").convert_alpha() #convert.alpha() is to keep the transparency
+backspacePink = pygame.image.load("assets/img/backspace_pink.png").convert_alpha()
 
 #### UI ####
 def createRow(y, selectedSquare, leftMargin, codeLength):
@@ -93,7 +83,7 @@ def createMatrix(height, selectedSquare, left_margin, codeLength):
 	if height != 0:
 		createRow(70 * count, selectedSquare, left_margin, codeLength)
 
-def drawKeyboard(actualNumbers, keyboard_X, keyboard_Y, codeLength):
+def drawKeyboard(actualNumbers, keyboard_X, keyboard_Y, submit_X, backspacePress):
 	# Squares
 	x = keyboard_X
 	
@@ -106,8 +96,13 @@ def drawKeyboard(actualNumbers, keyboard_X, keyboard_Y, codeLength):
 			pygame.draw.rect(screen, PINK, pygame.Rect(x, keyboard_Y, KEYBOARD_SQUARESIZE, KEYBOARD_SQUARESIZE),  0, 3)
 		x += KEYBOARD_SQUARESIZE + 5
 	
-	# Square for the backspace
-	pygame.draw.rect(screen, PINK, pygame.Rect(x, keyboard_Y, KEYBOARD_SQUARESIZE, KEYBOARD_SQUARESIZE),  0, 3)
+	# Square and image for the backspace
+	if backspacePress:
+		pygame.draw.rect(screen, BLACK, pygame.Rect(x, keyboard_Y, KEYBOARD_SQUARESIZE, KEYBOARD_SQUARESIZE),  0, 3)
+		screen.blit(backspacePink, (keyboard_X + (KEYBOARD_SQUARESIZE + 5) * 9, keyboard_Y))
+	else:
+		pygame.draw.rect(screen, PINK, pygame.Rect(x, keyboard_Y, KEYBOARD_SQUARESIZE, KEYBOARD_SQUARESIZE),  0, 3)
+		screen.blit(backspacePurple, (keyboard_X + (KEYBOARD_SQUARESIZE + 5) * 9, keyboard_Y))
 	
 	# Numbers / Backspace
 	x = keyboard_X + 20
@@ -120,15 +115,12 @@ def drawKeyboard(actualNumbers, keyboard_X, keyboard_Y, codeLength):
 			numberText = keyboard_font.render(str(i), True, PURPLE)
 		screen.blit(numberText, (x, y))
 		x += KEYBOARD_SQUARESIZE + 5
-	
-	# Backspace Image
-	screen.blit(backspace, (keyboard_X + (KEYBOARD_SQUARESIZE + 5) * 9, keyboard_Y))
 
 	# Submit Button
-	x = keyboard_X + (KEYBOARD_SQUARESIZE + 5) * (5 - (SUBMIT_BUTTON_WIDTH / 75) / 2) - 5
+	x = submit_X
 	y = keyboard_Y + KEYBOARD_SQUARESIZE + 10
-	x_string = (x + (SUBMIT_BUTTON_WIDTH / 2)) - (getStringWidth("submit", subtitle_font) / 2) - 3
-	y_string = (y + (SUBMIT_BUTTON_HEIGHT / 2)) - (getStringHeight("submit", subtitle_font) / 2)
+	x_string = (x + (SUBMIT_BUTTON_WIDTH / 2)) - (getStringWidth("Submit", subtitle_font) / 2) - 3
+	y_string = (y + (SUBMIT_BUTTON_HEIGHT / 2)) - (getStringHeight("Submit", subtitle_font) / 2)
 	if isListComplete(actualNumbers):
 		pygame.draw.rect(screen, PINK, pygame.Rect(x, y, SUBMIT_BUTTON_WIDTH, SUBMIT_BUTTON_HEIGHT),  0, 3)
 		screen.blit(submitPurple, (x_string, y_string))
@@ -137,7 +129,7 @@ def drawKeyboard(actualNumbers, keyboard_X, keyboard_Y, codeLength):
 		screen.blit(submitWhite, (x_string, y_string))
 
 # Screen to select difficulty
-def selectDifficulty(window_X, window_Y, left_margin):
+def selectDifficulty(window_X, window_Y, left_margin, buttonHover):
 	screen.blit(difficultyText, (left_margin - getStringWidth("Select Difficulty:", title_font) / 2, window_Y * 0.25))
 	width = DIFFICULTY_BUTTON_WIDTH
 	height = DIFFICULTY_BUTTON_HEIGHT
@@ -147,163 +139,96 @@ def selectDifficulty(window_X, window_Y, left_margin):
 	y_text = y + (height - getStringHeight("Easy", subtitle_font)) / 3
 
 	# We draw the 3 button to choose difficulty
-	pygame.draw.rect(screen, PINK, pygame.Rect(x, y, width, height),  0, 3)
-	screen.blit(easy, (x + (width - getStringWidth("Easy", subtitle_font)) / 2, y_text))
-	screen.blit(easy_digits, (x + (width - getStringWidth("(3 Digits)", subtitle_font)) / 2, y_text + 50))
-	x += width + separation
-	pygame.draw.rect(screen, PINK, pygame.Rect(x, y, width, height),  0, 3)
-	screen.blit(normal, (x + (width - getStringWidth("Normal", subtitle_font)) / 2, y + (height - getStringHeight("Normal", subtitle_font)) / 3))
-	screen.blit(normal_digits, (x + (width - getStringWidth("(4 Digits)", subtitle_font)) / 2, y_text + 50))
-	x += width + separation
-	pygame.draw.rect(screen, PINK, pygame.Rect(x, y, width, height),  0, 3)
-	screen.blit(hard, (x + (width - getStringWidth("Hard", subtitle_font)) / 2, y + (height - getStringHeight("Hard", subtitle_font)) / 3))
-	screen.blit(hard_digits, (x + (width - getStringWidth("(5 Digits)", subtitle_font)) / 2, y_text + 50))
-
-
-#### Auxiliary Functions ####
-
-# Generates a number with 4 random non-zero non-repeating digits
-def generateRandomNumber(codeLength):
-	randomNumber = []
-	while len(randomNumber) < codeLength:
-		newNumber = str(numpy.random.randint(1,9))
-		if newNumber not in randomNumber:
-			randomNumber.append(newNumber)
-	return randomNumber
-
-# ["1", "2", "3", "4"] -> 1234
-def listToNumber(list):
-	return str(''.join(map(str,list)))
-
-# Returns true if the list has no ' ' in it 
-def isListComplete(list):
-	return (not ' ' in list)
-
-# If no square is selected it looks for the first number it finds and replaces it with ' '
-def deleteNumber(list, selectedSquare):
-	if selectedSquare == -1:
-		for i in range(1, len(list) + 1):
-			if list[-i] != ' ':
-				list[-i] = ' '
-				return list
+	if buttonHover == 1:
+		pygame.draw.rect(screen, BLACK, pygame.Rect(x, y, width, height),  0, 3)
+		screen.blit(easy_hover, (x + (width - getStringWidth("Easy", subtitle_font)) / 2, y_text))
+		screen.blit(easy_digits_hover, (x + (width - getStringWidth("(3 Digits)", subtitle_font)) / 2, y_text + 50))
 	else:
-		list[selectedSquare] = ' '
-		return list
-	return list
-
-# Compares the random number with the user's input, return a tuple of strings (goodNumbers, excellentNumbers)
-def compareNumbers(randomNumber, input):
-	counter = 0
-	goodNumbers = 0
-	excellentNumbers = 0
-	for i in input:
-		if i in randomNumber:
-			if randomNumber[counter] == i:
-				excellentNumbers += 1
-			else:
-				goodNumbers += 1
-		counter += 1
-	return (str(goodNumbers), str(excellentNumbers))
-
-# We specify the number we want to add to the list, the current value of selectedSquare and the list of the actualNumbers
-def addNumber(number, selectedSquare, actualNumbers, codeLength):
-	if number not in actualNumbers:
-		if (not isListComplete(actualNumbers)) and (selectedSquare == -1):
-			index = actualNumbers.index(' ')
-			actualNumbers[index] = number
-		# If the list is complete or incomplete but there is a square selected we have to replace that number with a new one
-		elif selectedSquare != -1:
-			actualNumbers[selectedSquare] = number
-		
-		# We deselect any square that was selected
-		return -1
-		
-	# If we selected a square and input a number that is already on the list we simply return the previous value
-	# To the user it seems like it does nothing
-	return selectedSquare
-
-# Appends the number we submit to the permanentNumbers and the score to the scores list, also checks if the conditions to win are met
-def submitNumber(permanentNumbers, actualNumbers, matrixHeight, numberToGuess, scores, codeLength):
-	permanentNumbers_return = permanentNumbers.copy()
-	permanentNumbers_return.append(actualNumbers.copy())
-	score = compareNumbers(numberToGuess, actualNumbers.copy())
-	scores_return = scores.copy()
-	scores_return.append(score)
-	matrixHeight += 1
-	selectedSquare = -1
-	showScoreTitle = True
-	actualNumbers_return = actualNumbers.copy()
-	actualNumbers_return = cleanList(codeLength)
-	endGame = False
-	win = False
-	lose = False
-	if score[1] == str(codeLength):
-		endGame = True
-		win = True
-	elif matrixHeight == NUMBEROFTRIES + 1:
-		endGame = True
-		lose = True
-
-	return permanentNumbers_return, scores_return, actualNumbers_return, matrixHeight, selectedSquare, showScoreTitle, endGame, win, lose
-
-# Returns a "cleanList" a list [' ', ..., ' '] with as many ' ' as the code to crack
-def cleanList(codeLength):
-	actualNumbers = []
-	for i in range(0, codeLength):
-		actualNumbers.append(' ')
-	return actualNumbers
-
-# Handles the resizing of the window
-def resize(width, height, screen):
-	# The window cannot be resized less than the minimum
-	if (width >= MINIMUM_WIDTH) and (height >= MINIMUM_HEIGHT):
-		window_X = width
-		window_Y = height
-		screen = pygame.display.set_mode((window_X, window_Y), pygame.RESIZABLE)
+		pygame.draw.rect(screen, PINK, pygame.Rect(x, y, width, height),  0, 3)
+		screen.blit(easy, (x + (width - getStringWidth("Easy", subtitle_font)) / 2, y_text))
+		screen.blit(easy_digits, (x + (width - getStringWidth("(3 Digits)", subtitle_font)) / 2, y_text + 50))
+	
+	x += width + separation
+	
+	if buttonHover == 2:
+		pygame.draw.rect(screen, BLACK, pygame.Rect(x, y, width, height),  0, 3)
+		screen.blit(normal_hover, (x + (width - getStringWidth("Normal", subtitle_font)) / 2, y + (height - getStringHeight("Normal", subtitle_font)) / 3))
+		screen.blit(normal_digits_hover, (x + (width - getStringWidth("(4 Digits)", subtitle_font)) / 2, y_text + 50))
 	else:
-		window_X = MINIMUM_WIDTH
-		window_Y = MINIMUM_HEIGHT
-		screen = pygame.display.set_mode((window_X, window_Y), pygame.RESIZABLE)
+		pygame.draw.rect(screen, PINK, pygame.Rect(x, y, width, height),  0, 3)
+		screen.blit(normal, (x + (width - getStringWidth("Normal", subtitle_font)) / 2, y + (height - getStringHeight("Normal", subtitle_font)) / 3))
+		screen.blit(normal_digits, (x + (width - getStringWidth("(4 Digits)", subtitle_font)) / 2, y_text + 50))
 	
-	return window_X, window_Y, screen
+	x += width + separation
 	
+	if buttonHover == 3:
+		pygame.draw.rect(screen, BLACK, pygame.Rect(x, y, width, height),  0, 3)
+		screen.blit(hard_hover, (x + (width - getStringWidth("Hard", subtitle_font)) / 2, y + (height - getStringHeight("Hard", subtitle_font)) / 3))
+		screen.blit(hard_digits_hover, (x + (width - getStringWidth("(5 Digits)", subtitle_font)) / 2, y_text + 50))
+	else:
+		pygame.draw.rect(screen, PINK, pygame.Rect(x, y, width, height),  0, 3)
+		screen.blit(hard, (x + (width - getStringWidth("Hard", subtitle_font)) / 2, y + (height - getStringHeight("Hard", subtitle_font)) / 3))
+		screen.blit(hard_digits, (x + (width - getStringWidth("(5 Digits)", subtitle_font)) / 2, y_text + 50))
+
+
+#### Main Function ####
 # Function that happens every frame
 async def main(screen, window_X, window_Y):
-	run = True
-	restart = True
-	endGame = False
-	win = False
-	lose = False
-	showText = True
-	showScoreTitle = False
+	# Starting conditions
+	starting 		= True
+	run 			= True
+	restart 		= True
+	showText 		= True
+	endGame 		= False
+	win 			= False
+	lose 			= False
+	showScoreTitle 	= False
 	matrixHeight = 1
 	selectedSquare = -1
-	starting = True
 	codeLength = 4
+	backspacePress = False
+	buttonHover = 0
 
 	while run:
-		# UI Related
+		# UI Related - These variable depend on window_X and window_Y that can change if the window is resized
 		left_margin = window_X / 2 - ((MATRIXSQUARESIZE + 5) * codeLength + getStringWidth("Good", scoreTitle_font) + 10 + getStringWidth("Excelent", scoreTitle_font))/2
 		keyboard_X = int((window_X / 2) - ((((KEYBOARD_SQUARESIZE + 5) * 10) - 5) / 2))
 		keyboard_Y = window_Y - 150
+		submit_X = window_X / 2 - SUBMIT_BUTTON_WIDTH / 2
 
+		# Background color
 		screen.fill(PURPLE)
+			
+		
+		#if lastValue == keys[pygame.K_BACKSPACE] == True:
+			#backspacePress = True
 
 		if starting:
-			# We set a value manually so it doesn't dependd on the codeLength
+			# We set a value manually so it doesn't depend on the codeLength
 			left_margin = window_X / 2 - ((MATRIXSQUARESIZE + 5) * 4 + getStringWidth("Good", scoreTitle_font) + 10 + getStringWidth("Excelent", scoreTitle_font))/2
-			selectDifficulty(window_X, window_Y, left_margin)
+			selectDifficulty(window_X, window_Y, left_margin, buttonHover)
 
 			for event in pygame.event.get():
 
 				if event.type == pygame.QUIT:
 					run = False
 
+				# Difficulty Selection
+				mouse = pygame.mouse.get_pos()
+				x = (window_X - 3 * DIFFICULTY_BUTTON_WIDTH - 2 * 30) / 2
+				y = window_Y * 0.5 - DIFFICULTY_BUTTON_HEIGHT / 2
+				if (x < mouse[0] < x + DIFFICULTY_BUTTON_WIDTH) and (y < mouse[1] < y + DIFFICULTY_BUTTON_HEIGHT):
+					buttonHover = 1
+				elif (x + DIFFICULTY_BUTTON_WIDTH + DIFFICULTY_BUTTON_SEPARATION < mouse[0] < x + 2 * DIFFICULTY_BUTTON_WIDTH + DIFFICULTY_BUTTON_SEPARATION) and (y < mouse[1] < y + DIFFICULTY_BUTTON_HEIGHT):
+					buttonHover = 2
+				elif (x + 2 * DIFFICULTY_BUTTON_WIDTH + 2 * DIFFICULTY_BUTTON_SEPARATION < mouse[0] < x + 3 * DIFFICULTY_BUTTON_WIDTH + 2 * DIFFICULTY_BUTTON_SEPARATION) and (y < mouse[1] < y + DIFFICULTY_BUTTON_HEIGHT):
+					buttonHover = 3
+				else: 
+					buttonHover = 0
+				
+
+
 				if event.type == pygame.MOUSEBUTTONDOWN:
-					mouse = pygame.mouse.get_pos()
-					x = (window_X - 3 * DIFFICULTY_BUTTON_WIDTH - 2 * 30) / 2
-					y = window_Y * 0.5 - DIFFICULTY_BUTTON_HEIGHT / 2
-					
 					# We check if we are on the height of the buttons
 					if (y < mouse[1] < y + DIFFICULTY_BUTTON_HEIGHT):
 						if (x < mouse[0] < x + DIFFICULTY_BUTTON_WIDTH):
@@ -352,14 +277,6 @@ async def main(screen, window_X, window_Y):
 					string = getLoseString(numberToGuess)
 					screen.blit(loseText, (window_X/2 - (getStringWidth(string, title_font) / 2), window_Y/2 - 2 * (getStringHeight(string, title_font))))
 					screen.blit(restart_text, (window_X/2 - (getStringWidth(string, title_font) / 2), window_Y/2 + (getStringHeight(string, title_font))))
-
-			if showText == True:
-					screen.blit(title, (10, 10))
-					# On-Screen Keyboard
-					drawKeyboard(actualNumbers, keyboard_X, keyboard_Y, codeLength)
-					if showScoreTitle == True:
-						screen.blit(scoreGood, (left_margin + ((MATRIXSQUARESIZE + 5) * codeLength + getStringWidth("Good", scoreTitle_font) / 2), 40))
-						screen.blit(scoreExcelent, (left_margin + ((MATRIXSQUARESIZE + 5) * codeLength + getStringWidth("Good", scoreTitle_font) + 10 + getStringWidth("Excelent", scoreTitle_font) / 2), 40))
 						
 			for event in pygame.event.get():
 				
@@ -370,8 +287,11 @@ async def main(screen, window_X, window_Y):
 					# The game is ongoing
 					if endGame == False:
 						if (event.unicode in NUMBERS):
-							selectedSquare = addNumber(event.unicode, selectedSquare, actualNumbers, codeLength)
+							selectedSquare = addNumber(event.unicode, selectedSquare, actualNumbers)
 						elif event.key == pygame.K_BACKSPACE:
+							if hasElementToDelete(actualNumbers):
+								# We change the color of the button via the backspacePress flag
+								backspacePress = True
 							actualNumbers = deleteNumber(actualNumbers, selectedSquare)
 							selectedSquare = -1
 						elif event.key == pygame.K_r:
@@ -381,13 +301,18 @@ async def main(screen, window_X, window_Y):
 							permanentNumbers, scores, actualNumbers, matrixHeight, selectedSquare, showScoreTitle, endGame, win, lose = submitNumber(permanentNumbers, actualNumbers, matrixHeight, numberToGuess, scores, codeLength)
 						elif event.key == pygame.K_ESCAPE:
 							run = False
+					
 					# The game is over
 					elif event.key == pygame.K_r:
 						restart = True
 						starting = True
-					
+
+				# Resets the color of the backspace color when the key is released
+				if event.type == pygame.KEYUP and event.key == pygame.K_BACKSPACE:
+					backspacePress = False
 				
 				if event.type == pygame.MOUSEBUTTONDOWN:
+					# The game is ongoing
 					if endGame == False:
 						mouse = pygame.mouse.get_pos()
 						#### On-screen Keyboard Actions ####
@@ -397,16 +322,19 @@ async def main(screen, window_X, window_Y):
 							for i in range(1, 10):
 								# When we find the number we check if it meets the criteria to be on the list
 								if (x_keyboard < mouse[0] < x_keyboard + 70):
-										selectedSquare = addNumber(str(i), selectedSquare, actualNumbers, codeLength)
+										selectedSquare = addNumber(str(i), selectedSquare, actualNumbers)
 										break
 								x_keyboard += 75
 							# This means we were on the range but none of 9 numbers matched, which means we clicked on the erase button
 							if mouse[0] > keyboard_X + (KEYBOARD_SQUARESIZE + 5) * 9:
+								if hasElementToDelete(actualNumbers):
+									# We change the color of the button via the backspacePress flag
+									backspacePress = True
 								actualNumbers = deleteNumber(actualNumbers, selectedSquare)
 								selectedSquare = -1
 						
 						# If we are not on the numbers maybe we are on the submit button
-						elif (keyboard_X + (KEYBOARD_SQUARESIZE + 5) * (5 - (SUBMIT_BUTTON_WIDTH / 75) / 2) - 5 < mouse[0] < keyboard_X + (KEYBOARD_SQUARESIZE + 5) * (5 - (SUBMIT_BUTTON_WIDTH / 75) / 2) - 5 + SUBMIT_BUTTON_WIDTH) and (keyboard_Y + KEYBOARD_SQUARESIZE + 10 < mouse[1] < keyboard_Y + KEYBOARD_SQUARESIZE + 10 + SUBMIT_BUTTON_HEIGHT) and isListComplete(actualNumbers):
+						elif (submit_X < mouse[0] < submit_X + SUBMIT_BUTTON_WIDTH) and (keyboard_Y + KEYBOARD_SQUARESIZE + 10 < mouse[1] < keyboard_Y + KEYBOARD_SQUARESIZE + 10 + SUBMIT_BUTTON_HEIGHT) and isListComplete(actualNumbers):
 							permanentNumbers, scores, actualNumbers, matrixHeight, selectedSquare, showScoreTitle, endGame, win, lose = submitNumber(permanentNumbers, actualNumbers, matrixHeight, numberToGuess, scores, codeLength)
 						
 						#### Square selector ####
@@ -426,13 +354,27 @@ async def main(screen, window_X, window_Y):
 						# We clicked anywhere else on the screen
 						else:
 							selectedSquare = -1
-						
+					
+					# The game is over
 					else:
 						restart = True
 						starting = True
 				
+				# Resets the color of the backspace color when the click is released
+				if event.type == pygame.MOUSEBUTTONUP and backspacePress:
+					backspacePress = False
+				
+				# The size of the window was changed
 				if event.type == pygame.VIDEORESIZE:
 					window_X, window_Y, screen = resize(event.w, event.h, screen)
+			
+			if showText == True:
+				screen.blit(title, (10, 10))
+				# On-Screen Keyboard
+				drawKeyboard(actualNumbers, keyboard_X, keyboard_Y, submit_X, backspacePress)
+				if showScoreTitle == True:
+					screen.blit(scoreGood, (left_margin + ((MATRIXSQUARESIZE + 5) * codeLength + getStringWidth("Good", scoreTitle_font) / 2), 40))
+					screen.blit(scoreExcelent, (left_margin + ((MATRIXSQUARESIZE + 5) * codeLength + getStringWidth("Good", scoreTitle_font) + 10 + getStringWidth("Excelent", scoreTitle_font) / 2), 40))
 
 			### Number Printing ###
 			y = 80
@@ -462,6 +404,7 @@ async def main(screen, window_X, window_Y):
 				inTheSamePosition = number_font.render(score[1], True, WHITE)
 				screen.blit(inTheSamePosition, (x, y))
 				y += 70
+
 
 		pygame.display.flip()
 

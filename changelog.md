@@ -1,5 +1,10 @@
 # Crack the Code Changelog
 
+## V0.5.1 - 21/04/2023
+- ##### Added little "animations" to the backspace button when it's pressed and to the difficulty buttons when they are hovered with a mouse.
+- ##### Moved auxiliary functions to a secondary .py file so that the main file is not that cluttered.
+- ##### Minor code improvements.
+
 ## V0.5.0 - 14/04/2023
 - ##### You can now choose length of the code you want to crack! Choose between Easy (3 digits), Normal (4 Digits) or Hard (5 Digits).
 - ##### Added a few comments to the code to improve it's legibility.
