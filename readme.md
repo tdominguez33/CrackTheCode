@@ -18,4 +18,4 @@ You can download the game from the [Releases Page](https://github.com/tdominguez
 ### Screenshots
 ![Difficulty Selection](img/difficultySelection.png)
 ![Main Screen](img/mainScreen.png)
-![Main Screen](img/winScreen.png)
+![Win Screen](img/winScreen.png)
