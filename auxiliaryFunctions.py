@@ -3,8 +3,8 @@ import pygame
 
 # Constants
 NUMBEROFTRIES = 10
-MINIMUM_WIDTH = 800
-MINIMUM_HEIGHT = 950
+MINIMUM_WIDTH = 0
+MINIMUM_HEIGHT = 0
 
 #### Text Positioning ####
 

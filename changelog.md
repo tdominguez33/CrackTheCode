@@ -1,5 +1,8 @@
 # Crack the Code Changelog
 
+## V0.6.0 - 13/05/2023
+- ##### Added a hover animation when selecting the difficulty.
+
 ## V0.5.1 - 21/04/2023
 - ##### Added little "animations" to the backspace button when it's pressed and to the difficulty buttons when they are hovered with a mouse.
 - ##### Moved auxiliary functions to a secondary .py file so that the main file is not that cluttered.

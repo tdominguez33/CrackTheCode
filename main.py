@@ -4,8 +4,8 @@ from auxiliaryFunctions import *
 
 # Constants
 NUMBERS = ["1", "2", "3", "4", "5", "6", "7", "8", "9"]
-MATRIXSQUARESIZE = 55
-KEYBOARD_SQUARESIZE = 70
+KEYBOARD_SQUARE_SIZE = 70
+KEYBOARD_SQUARE_SEPARATION = 5
 SUBMIT_BUTTON_WIDTH = 250
 SUBMIT_BUTTON_HEIGHT = 50
 DIFFICULTY_BUTTON_WIDTH = 200
@@ -33,7 +33,7 @@ pygame.init()
 pygame.display.set_caption("Crack the Code")
 screen = pygame.display.set_mode((window_X, window_Y), pygame.RESIZABLE)
 
-# Fonts
+# Fonts - Some values can change depending on resolution
 title_font      = pygame.font.Font(QAZ, 48)
 subtitle_font   = pygame.font.Font(QAZ, 35)
 scoreTitle_font = pygame.font.Font(QAZ, 25)
@@ -41,7 +41,7 @@ keyboard_font   = pygame.font.Font(SUNNYSPELLS, 80)
 number_font     = pygame.font.Font(SUNNYSPELLS, 48)
 
 # Constant UI Text
-title				= title_font.render("Crack the Code", True, PINK)
+
 difficultyText 		= title_font.render("Select Difficulty:", True, WHITE)
 submitWhite			= subtitle_font.render("Submit", True, GREY2)
 submitPurple		= subtitle_font.render("Submit", True, PURPLE)
@@ -66,22 +66,23 @@ backspacePurple = pygame.image.load("assets/img/backspace_purple.png").convert_a
 backspacePink = pygame.image.load("assets/img/backspace_pink.png").convert_alpha()
 
 #### UI ####
-def createRow(y, selectedSquare, leftMargin, codeLength):
+def createRow(y, selectedSquare, leftMargin, codeLength, matrixSquareSize):
 	x = leftMargin
 	for i in range(0, codeLength):
 		if selectedSquare == i:
-			pygame.draw.rect(screen, WHITE, pygame.Rect(x, y, MATRIXSQUARESIZE, MATRIXSQUARESIZE),  2, 3)
+			pygame.draw.rect(screen, WHITE, pygame.Rect(x, y, matrixSquareSize, matrixSquareSize),  2, 3)
 		else:
-			pygame.draw.rect(screen, PINK, pygame.Rect(x, y, MATRIXSQUARESIZE, MATRIXSQUARESIZE),  2, 3)
-		x += MATRIXSQUARESIZE + 5
+			pygame.draw.rect(screen, PINK, pygame.Rect(x, y, matrixSquareSize, matrixSquareSize),  2, 3)
+		x += matrixSquareSize + 5
 
-def createMatrix(height, selectedSquare, left_margin, codeLength):
+def createMatrix(height, selectedSquare, left_margin, codeLength, matrixSquareSize, window_Y):
 	count = 1
+	y = window_Y * 0.07
 	while count < height:
-		createRow(70 * count, -1, left_margin, codeLength)
+		createRow(y * count, -1, left_margin, codeLength, matrixSquareSize)
 		count += 1
 	if height != 0:
-		createRow(70 * count, selectedSquare, left_margin, codeLength)
+		createRow(y * count, selectedSquare, left_margin, codeLength, matrixSquareSize)
 
 def drawKeyboard(actualNumbers, keyboard_X, keyboard_Y, submit_X, backspacePress):
 	# Squares
@@ -91,18 +92,18 @@ def drawKeyboard(actualNumbers, keyboard_X, keyboard_Y, submit_X, backspacePress
 	for i in range(1,10):
 		# If a number is introduced the color of its key changes
 		if str(i) in actualNumbers:
-			pygame.draw.rect(screen, BLACK, pygame.Rect(x, keyboard_Y, KEYBOARD_SQUARESIZE, KEYBOARD_SQUARESIZE),  0, 3)
+			pygame.draw.rect(screen, BLACK, pygame.Rect(x, keyboard_Y, KEYBOARD_SQUARE_SIZE, KEYBOARD_SQUARE_SIZE),  0, 3)
 		else:
-			pygame.draw.rect(screen, PINK, pygame.Rect(x, keyboard_Y, KEYBOARD_SQUARESIZE, KEYBOARD_SQUARESIZE),  0, 3)
-		x += KEYBOARD_SQUARESIZE + 5
+			pygame.draw.rect(screen, PINK, pygame.Rect(x, keyboard_Y, KEYBOARD_SQUARE_SIZE, KEYBOARD_SQUARE_SIZE),  0, 3)
+		x += KEYBOARD_SQUARE_SIZE + KEYBOARD_SQUARE_SEPARATION
 	
 	# Square and image for the backspace
 	if backspacePress:
-		pygame.draw.rect(screen, BLACK, pygame.Rect(x, keyboard_Y, KEYBOARD_SQUARESIZE, KEYBOARD_SQUARESIZE),  0, 3)
-		screen.blit(backspacePink, (keyboard_X + (KEYBOARD_SQUARESIZE + 5) * 9, keyboard_Y))
+		pygame.draw.rect(screen, BLACK, pygame.Rect(x, keyboard_Y, KEYBOARD_SQUARE_SIZE, KEYBOARD_SQUARE_SIZE),  0, 3)
+		screen.blit(backspacePink, (keyboard_X + (KEYBOARD_SQUARE_SIZE + KEYBOARD_SQUARE_SEPARATION) * 9, keyboard_Y))
 	else:
-		pygame.draw.rect(screen, PINK, pygame.Rect(x, keyboard_Y, KEYBOARD_SQUARESIZE, KEYBOARD_SQUARESIZE),  0, 3)
-		screen.blit(backspacePurple, (keyboard_X + (KEYBOARD_SQUARESIZE + 5) * 9, keyboard_Y))
+		pygame.draw.rect(screen, PINK, pygame.Rect(x, keyboard_Y, KEYBOARD_SQUARE_SIZE, KEYBOARD_SQUARE_SIZE),  0, 3)
+		screen.blit(backspacePurple, (keyboard_X + (KEYBOARD_SQUARE_SIZE + KEYBOARD_SQUARE_SEPARATION) * 9, keyboard_Y))
 	
 	# Numbers / Backspace
 	x = keyboard_X + 20
@@ -114,11 +115,11 @@ def drawKeyboard(actualNumbers, keyboard_X, keyboard_Y, submit_X, backspacePress
 		else:
 			numberText = keyboard_font.render(str(i), True, PURPLE)
 		screen.blit(numberText, (x, y))
-		x += KEYBOARD_SQUARESIZE + 5
+		x += KEYBOARD_SQUARE_SIZE + KEYBOARD_SQUARE_SEPARATION
 
 	# Submit Button
 	x = submit_X
-	y = keyboard_Y + KEYBOARD_SQUARESIZE + 10
+	y = keyboard_Y + KEYBOARD_SQUARE_SIZE + 10
 	x_string = (x + (SUBMIT_BUTTON_WIDTH / 2)) - (getStringWidth("Submit", subtitle_font) / 2) - 3
 	y_string = (y + (SUBMIT_BUTTON_HEIGHT / 2)) - (getStringHeight("Submit", subtitle_font) / 2)
 	if isListComplete(actualNumbers):
@@ -183,29 +184,29 @@ async def main(screen, window_X, window_Y):
 	win 			= False
 	lose 			= False
 	showScoreTitle 	= False
-	matrixHeight = 1
-	selectedSquare = -1
+	matrixHeight = 1	# Amount of rows we are going to draw
+	selectedSquare = -1	# Which square is selected (Possible values = -1, 0, 1, 2, 3) (-1 = None)
 	codeLength = 4
 	backspacePress = False
-	buttonHover = 0
+	buttonHover = 0		# Which difficulty square is being hovered (Possible values = 0, 1, 2, 3) (0 = None)
 
 	while run:
-		# UI Related - These variable depend on window_X and window_Y that can change if the window is resized
-		left_margin = window_X / 2 - ((MATRIXSQUARESIZE + 5) * codeLength + getStringWidth("Good", scoreTitle_font) + 10 + getStringWidth("Excelent", scoreTitle_font))/2
-		keyboard_X = int((window_X / 2) - ((((KEYBOARD_SQUARESIZE + 5) * 10) - 5) / 2))
+		# UI Related - These variables depend on window_X and window_Y that will change if the window is resized
+		matrixSquareSize = window_Y * 0.055
+		title_font = pygame.font.Font(QAZ, int(matrixSquareSize - 5))
+		title = title_font.render("Crack the Code", True, PINK)
+		number_font	= pygame.font.Font(SUNNYSPELLS, int(matrixSquareSize - 5))
+		left_margin = window_X / 2 - ((matrixSquareSize + 5) * codeLength + getStringWidth("Good", scoreTitle_font) + 10 + getStringWidth("Excelent", scoreTitle_font))/2
+		keyboard_X = int((window_X / 2) - ((((KEYBOARD_SQUARE_SIZE + 5) * 10) - 5) / 2))
 		keyboard_Y = window_Y - 150
 		submit_X = window_X / 2 - SUBMIT_BUTTON_WIDTH / 2
 
 		# Background color
 		screen.fill(PURPLE)
-			
-		
-		#if lastValue == keys[pygame.K_BACKSPACE] == True:
-			#backspacePress = True
 
 		if starting:
 			# We set a value manually so it doesn't depend on the codeLength
-			left_margin = window_X / 2 - ((MATRIXSQUARESIZE + 5) * 4 + getStringWidth("Good", scoreTitle_font) + 10 + getStringWidth("Excelent", scoreTitle_font))/2
+			left_margin = window_X / 2 - ((matrixSquareSize + 5) * 4 + getStringWidth("Good", scoreTitle_font) + 10 + getStringWidth("Excelent", scoreTitle_font))/2
 			selectDifficulty(window_X, window_Y, left_margin, buttonHover)
 
 			for event in pygame.event.get():
@@ -214,6 +215,8 @@ async def main(screen, window_X, window_Y):
 					run = False
 
 				# Difficulty Selection
+
+				# We check if the mouse is hovering any of the three buttons to change it's color.
 				mouse = pygame.mouse.get_pos()
 				x = (window_X - 3 * DIFFICULTY_BUTTON_WIDTH - 2 * 30) / 2
 				y = window_Y * 0.5 - DIFFICULTY_BUTTON_HEIGHT / 2
@@ -226,7 +229,6 @@ async def main(screen, window_X, window_Y):
 				else: 
 					buttonHover = 0
 				
-
 
 				if event.type == pygame.MOUSEBUTTONDOWN:
 					# We check if we are on the height of the buttons
@@ -245,7 +247,7 @@ async def main(screen, window_X, window_Y):
 					window_X, window_Y, screen = resize(event.w, event.h, screen)
 		else:
 
-			createMatrix(matrixHeight, selectedSquare, left_margin, codeLength)
+			createMatrix(matrixHeight, selectedSquare, left_margin, codeLength, matrixSquareSize, window_Y)
 				
 			if restart == True:
 				endGame = False
@@ -315,18 +317,19 @@ async def main(screen, window_X, window_Y):
 					# The game is ongoing
 					if endGame == False:
 						mouse = pygame.mouse.get_pos()
+						
 						#### On-screen Keyboard Actions ####
 						# We check if we are on the rectangle that the set of button creates
-						if (keyboard_X < mouse[0] < (keyboard_X + (KEYBOARD_SQUARESIZE + 5) * 10 - 5)) and (keyboard_Y < mouse[1] < keyboard_Y + KEYBOARD_SQUARESIZE):
+						if (keyboard_X < mouse[0] < (keyboard_X + (KEYBOARD_SQUARE_SIZE + KEYBOARD_SQUARE_SEPARATION) * 10 - KEYBOARD_SQUARE_SEPARATION)) and (keyboard_Y < mouse[1] < keyboard_Y + KEYBOARD_SQUARE_SIZE):
 							x_keyboard = keyboard_X
 							for i in range(1, 10):
 								# When we find the number we check if it meets the criteria to be on the list
-								if (x_keyboard < mouse[0] < x_keyboard + 70):
+								if (x_keyboard < mouse[0] < x_keyboard + KEYBOARD_SQUARE_SIZE):
 										selectedSquare = addNumber(str(i), selectedSquare, actualNumbers)
 										break
-								x_keyboard += 75
+								x_keyboard += KEYBOARD_SQUARE_SIZE + KEYBOARD_SQUARE_SEPARATION
 							# This means we were on the range but none of 9 numbers matched, which means we clicked on the erase button
-							if mouse[0] > keyboard_X + (KEYBOARD_SQUARESIZE + 5) * 9:
+							if mouse[0] > keyboard_X + (KEYBOARD_SQUARE_SIZE + KEYBOARD_SQUARE_SEPARATION) * 9:
 								if hasElementToDelete(actualNumbers):
 									# We change the color of the button via the backspacePress flag
 									backspacePress = True
@@ -334,14 +337,14 @@ async def main(screen, window_X, window_Y):
 								selectedSquare = -1
 						
 						# If we are not on the numbers maybe we are on the submit button
-						elif (submit_X < mouse[0] < submit_X + SUBMIT_BUTTON_WIDTH) and (keyboard_Y + KEYBOARD_SQUARESIZE + 10 < mouse[1] < keyboard_Y + KEYBOARD_SQUARESIZE + 10 + SUBMIT_BUTTON_HEIGHT) and isListComplete(actualNumbers):
+						elif (submit_X < mouse[0] < submit_X + SUBMIT_BUTTON_WIDTH) and (keyboard_Y + KEYBOARD_SQUARE_SIZE + 10 < mouse[1] < keyboard_Y + KEYBOARD_SQUARE_SIZE + 10 + SUBMIT_BUTTON_HEIGHT) and isListComplete(actualNumbers):
 							permanentNumbers, scores, actualNumbers, matrixHeight, selectedSquare, showScoreTitle, endGame, win, lose = submitNumber(permanentNumbers, actualNumbers, matrixHeight, numberToGuess, scores, codeLength)
 						
 						#### Square selector ####
-						elif (left_margin < mouse[0] < left_margin + (MATRIXSQUARESIZE + 5) * codeLength - 5) and (70 * matrixHeight < mouse[1] < 70 * matrixHeight + MATRIXSQUARESIZE):
+						elif (left_margin < mouse[0] < left_margin + (matrixSquareSize + 5) * codeLength - 5) and (70 * matrixHeight < mouse[1] < 70 * matrixHeight + matrixSquareSize):
 							x_row = left_margin
 							for i in range(0, codeLength):
-								if (x_row < mouse[0] < x_row + MATRIXSQUARESIZE):
+								if (x_row < mouse[0] < x_row + matrixSquareSize):
 									if selectedSquare != i:
 										selectedSquare = i
 										break
@@ -349,7 +352,7 @@ async def main(screen, window_X, window_Y):
 									else:
 										selectedSquare = -1
 										break
-								x_row += MATRIXSQUARESIZE + 5
+								x_row += matrixSquareSize + 5
 						
 						# We clicked anywhere else on the screen
 						else:
@@ -373,37 +376,37 @@ async def main(screen, window_X, window_Y):
 				# On-Screen Keyboard
 				drawKeyboard(actualNumbers, keyboard_X, keyboard_Y, submit_X, backspacePress)
 				if showScoreTitle == True:
-					screen.blit(scoreGood, (left_margin + ((MATRIXSQUARESIZE + 5) * codeLength + getStringWidth("Good", scoreTitle_font) / 2), 40))
-					screen.blit(scoreExcelent, (left_margin + ((MATRIXSQUARESIZE + 5) * codeLength + getStringWidth("Good", scoreTitle_font) + 10 + getStringWidth("Excelent", scoreTitle_font) / 2), 40))
+					screen.blit(scoreGood, (left_margin + ((matrixSquareSize + 5) * codeLength + getStringWidth("Good", scoreTitle_font) / 2), 40))
+					screen.blit(scoreExcelent, (left_margin + ((matrixSquareSize + 5) * codeLength + getStringWidth("Good", scoreTitle_font) + 10 + getStringWidth("Excelent", scoreTitle_font) / 2), 40))
 
 			### Number Printing ###
-			y = 80
+			y = window_Y * 0.07 + 10
 			# Numbers the user has previously entered
 			for list in permanentNumbers:
 				x = left_margin + 15
 				for number in list:
 					numberText = number_font.render(number, True, WHITE)
 					screen.blit(numberText, (x, y))
-					x += MATRIXSQUARESIZE + 5
-				y += 70
+					x += matrixSquareSize + 5
+				y += window_Y * 0.07 # 70px aprox at 950 height
 			
 			x = left_margin + 15
 			# Numbers the user inputs
 			for number in actualNumbers:
 				numberText = number_font.render(number, True, WHITE)
 				screen.blit(numberText, (x, y))
-				x += MATRIXSQUARESIZE + 5
+				x += matrixSquareSize + 5
 			
 			# Scores
 			y = 80
 			for score in scores:
-				x = left_margin + ((MATRIXSQUARESIZE + 5) * codeLength + 50)
+				x = left_margin + ((matrixSquareSize + 5) * codeLength + 50)
 				inTheNumber = number_font.render(score[0], True, WHITE)
 				screen.blit(inTheNumber, (x, y))
 				x += 100
 				inTheSamePosition = number_font.render(score[1], True, WHITE)
 				screen.blit(inTheSamePosition, (x, y))
-				y += 70
+				y += window_Y * 0.07
 
 
 		pygame.display.flip()
