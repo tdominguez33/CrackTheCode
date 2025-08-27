@@ -12,6 +12,7 @@ The interesting part is that you only know the amount, you don't know which spec
 - The code is composed of 4 non-repeating non-zero digits. Because of this you can't input a number with repeated digits or zero in it.
 - Good and Excelent numbers don't stack up, this means that if, for example, the code is 1234 and you guess 1243 you will get 2 Good and 2 Excelent, not 4 Good and 2 Excelent like some may think.
 
+### Download
 
 You can download the game from the [Releases Page](https://github.com/tdominguez33/CrackTheCode/releases) (Windows only).
 
